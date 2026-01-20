@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Para el amor de mi vida</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="card">
+        <p class="small-text big-love">
+            Si no te amara no te haría esto, mi amor 💕
+        </p>
+
+        <h1 class="main-text">
+            TE AMO MUCHO <br> MI MUJER ❤️
+        </h1>
+
+        <p class="message">
+            Eres la persona que llegó a cambiar mi vida para siempre.  
+            Contigo aprendí lo que es amar de verdad, cuidar y soñar juntos.  
+            No hay nadie más con quien quiera compartir mi vida. 💖
+        </p>
+
+        <h2 class="question">
+            ¿Te quieres casar conmigo? 💍
+        </h2>
+
+        <div class="buttons">
+            <button class="yes" id="yesBtn">Sí 💕</button>
+            <button class="no" id="noBtn">No 😅</button>
+        </div>
+
+        <!-- Mensaje oculto -->
+        <p class="success-message" id="successMsg">
+            Sabía que ibas a aceptar, mi amor ❤️🥹
+        </p>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById("noBtn");
+        const yesBtn = document.getElementById("yesBtn");
+        const successMsg = document.getElementById("successMsg");
+
+        noBtn.addEventListener("mouseover", () => {
+            const x = Math.random() * 200 - 100;
+            const y = Math.random() * 200 - 100;
+            noBtn.style.transform = `translate(${x}px, ${y}px)`;
+        });
+
+        yesBtn.addEventListener("click", () => {
+            successMsg.style.display = "block";
+            yesBtn.style.display = "none";
+            noBtn.style.display = "none";
+        });
+    </script>
+
+</body>
+</html>
