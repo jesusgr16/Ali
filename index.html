@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Para el amor de mi vida</title>
+
+    <!-- IMPORTANTE PARA CELULAR -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -27,11 +31,10 @@
         </h2>
 
         <div class="buttons">
-            <button class="yes" id="yesBtn">Sí 💕</button>
-            <button class="no" id="noBtn">No 😅</button>
+            <button class="yes" id="yesBtn">Si</button>
+            <button class="no" id="noBtn">No </button>
         </div>
 
-        <!-- Mensaje oculto -->
         <p class="success-message" id="successMsg">
             Sabía que ibas a aceptar, mi amor ❤️🥹
         </p>
@@ -42,11 +45,17 @@
         const yesBtn = document.getElementById("yesBtn");
         const successMsg = document.getElementById("successMsg");
 
-        noBtn.addEventListener("mouseover", () => {
-            const x = Math.random() * 200 - 100;
-            const y = Math.random() * 200 - 100;
+        function moveButton() {
+            const x = Math.random() * 180 - 90;
+            const y = Math.random() * 120 - 60;
             noBtn.style.transform = `translate(${x}px, ${y}px)`;
-        });
+        }
+
+        // PC
+        noBtn.addEventListener("mouseover", moveButton);
+
+        // CELULAR
+        noBtn.addEventListener("touchstart", moveButton);
 
         yesBtn.addEventListener("click", () => {
             successMsg.style.display = "block";
