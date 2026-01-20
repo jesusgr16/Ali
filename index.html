@@ -3,17 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Para el amor de mi vida</title>
-
-    <!-- IMPORTANTE PARA CELULAR -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="card">
+    <!-- PORTADA -->
+    <div class="intro" id="intro">
+        <h1>Para Aline Medina Cárdenas 💕</h1>
+        <button class="enter-btn" id="enterBtn">
+            Presiona aquí, mi amor 💖
+        </button>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="card hidden" id="mainContent">
         <p class="small-text big-love">
-           Esto lo hice con todo mi amor, pensando en ti 💕
+            Porque te amo con todo mi corazón, hice esto para ti 💖
         </p>
 
         <h1 class="main-text">
@@ -31,8 +37,8 @@
         </h2>
 
         <div class="buttons">
-            <button class="yes" id="yesBtn">Si</button>
-            <button class="no" id="noBtn">No </button>
+            <button class="yes" id="yesBtn">Sí 💕</button>
+            <button class="no" id="noBtn">No 😅</button>
         </div>
 
         <p class="success-message" id="successMsg">
@@ -41,6 +47,18 @@
     </div>
 
     <script>
+        const enterBtn = document.getElementById("enterBtn");
+        const intro = document.getElementById("intro");
+        const mainContent = document.getElementById("mainContent");
+
+        enterBtn.addEventListener("click", () => {
+            intro.classList.add("fade-out");
+            setTimeout(() => {
+                intro.style.display = "none";
+                mainContent.classList.remove("hidden");
+            }, 800);
+        });
+
         const noBtn = document.getElementById("noBtn");
         const yesBtn = document.getElementById("yesBtn");
         const successMsg = document.getElementById("successMsg");
@@ -51,10 +69,7 @@
             noBtn.style.transform = `translate(${x}px, ${y}px)`;
         }
 
-        // PC
         noBtn.addEventListener("mouseover", moveButton);
-
-        // CELULAR
         noBtn.addEventListener("touchstart", moveButton);
 
         yesBtn.addEventListener("click", () => {
@@ -66,4 +81,3 @@
 
 </body>
 </html>
-
