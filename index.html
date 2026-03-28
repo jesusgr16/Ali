@@ -2,71 +2,140 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Simulador de Cohete</title>
+<title>Simulador PRO de Cohete</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
     body {
         background: #0b0f1a;
         color: white;
-        text-align: center;
         font-family: Arial;
+        text-align: center;
     }
     canvas {
-        background: black;
         border: 2px solid white;
-        margin-top: 10px;
+        margin: 10px;
+        background: black;
+    }
+    .controls {
+        margin: 10px;
+    }
+    input {
+        width: 200px;
     }
 </style>
 </head>
 <body>
 
-<h1>🚀 Simulación de Cohete (ED real)</h1>
-<p>Masa, velocidad y desplazamiento en tiempo real</p>
+<h1>🚀 Simulador PRO de Cohete</h1>
 
-<canvas id="canvas" width="400" height="600"></canvas>
+<div class="controls">
+    Masa inicial: <input type="range" id="m0" min="100" max="1000" value="500"><span id="m0v"></span><br>
+    Combustible (kg/s): <input type="range" id="k" min="1" max="10" value="2"><span id="kv"></span><br>
+    Velocidad escape: <input type="range" id="ve" min="20" max="200" value="80"><span id="vev"></span><br>
+</div>
+
+<canvas id="simCanvas" width="400" height="600"></canvas>
+
+<canvas id="chart" width="600" height="300"></canvas>
 
 <script>
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const simCanvas = document.getElementById("simCanvas");
+const ctx = simCanvas.getContext("2d");
 
-// Parámetros físicos
-let m0 = 500;       // masa inicial (kg)
-let k = 2;          // consumo de combustible (kg/s)
-let ve = 50;        // velocidad de escape (m/s)
+// parámetros
+let m0Slider = document.getElementById("m0");
+let kSlider = document.getElementById("k");
+let veSlider = document.getElementById("ve");
 
-let t = 0;
+let m0v = document.getElementById("m0v");
+let kv = document.getElementById("kv");
+let vev = document.getElementById("vev");
+
+// variables
+let m, v, y, t;
 let dt = 0.1;
+let g = 9.81;
+let drag = 0.002;
 
-// Variables dinámicas
-let m = m0;
-let v = 0;
-let y = 0;
+// datos para gráfica
+let timeData = [], heightData = [], velocityData = [], massData = [];
 
-// Simulación
+// gráfica
+const chart = new Chart(document.getElementById("chart"), {
+    type: 'line',
+    data: {
+        labels: timeData,
+        datasets: [
+            {label: "Altura", data: heightData},
+            {label: "Velocidad", data: velocityData},
+            {label: "Masa", data: massData}
+        ]
+    },
+    options: {
+        animation: false,
+        scales: {
+            x: {display: true},
+            y: {display: true}
+        }
+    }
+});
+
+function reset() {
+    m = parseFloat(m0Slider.value);
+    v = 0;
+    y = 0;
+    t = 0;
+
+    timeData.length = 0;
+    heightData.length = 0;
+    velocityData.length = 0;
+    massData.length = 0;
+}
+
 function update() {
+    let k = parseFloat(kSlider.value);
+    let ve = parseFloat(veSlider.value);
+
     if (m > 50) {
         let dm = -k * dt;
         m += dm;
 
-        // dv = ve * (dm/m)
-        let dv = ve * (dm / m);
-        v += dv;
+        let thrust = ve * k;
+        let weight = m * g;
+        let dragForce = drag * v * v;
 
-        y += v * dt;
+        let a = (thrust - weight - dragForce) / m;
+
+        v += a * dt;
+    } else {
+        v -= g * dt;
     }
 
+    y += v * dt;
     t += dt;
+
+    // guardar datos
+    timeData.push(t.toFixed(1));
+    heightData.push(y);
+    velocityData.push(v);
+    massData.push(m);
+
+    if (timeData.length > 100) {
+        timeData.shift();
+        heightData.shift();
+        velocityData.shift();
+        massData.shift();
+    }
+
+    chart.update();
 }
 
-// Dibujo
 function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0,0,simCanvas.width,simCanvas.height);
 
-    // fondo
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    let rocketY = simCanvas.height - y - 60;
 
     // cohete
-    let rocketY = canvas.height - y - 50;
     ctx.fillStyle = "white";
     ctx.fillRect(180, rocketY, 40, 60);
 
@@ -80,21 +149,34 @@ function draw() {
         ctx.fill();
     }
 
-    // texto
+    // info
     ctx.fillStyle = "lime";
-    ctx.fillText("Tiempo: " + t.toFixed(1) + " s", 10, 20);
-    ctx.fillText("Masa: " + m.toFixed(1) + " kg", 10, 40);
-    ctx.fillText("Velocidad: " + v.toFixed(1) + " m/s", 10, 60);
-    ctx.fillText("Altura: " + y.toFixed(1) + " m", 10, 80);
+    ctx.fillText("t: " + t.toFixed(1), 10, 20);
+    ctx.fillText("m: " + m.toFixed(1), 10, 40);
+    ctx.fillText("v: " + v.toFixed(1), 10, 60);
+    ctx.fillText("y: " + y.toFixed(1), 10, 80);
 }
 
-// Loop principal
 function loop() {
     update();
     draw();
     requestAnimationFrame(loop);
 }
 
+// actualizar labels
+function updateLabels() {
+    m0v.innerText = m0Slider.value;
+    kv.innerText = kSlider.value;
+    vev.innerText = veSlider.value;
+}
+
+m0Slider.oninput = () => {updateLabels(); reset();}
+kSlider.oninput = () => {updateLabels(); reset();}
+veSlider.oninput = () => {updateLabels(); reset();}
+
+// iniciar
+updateLabels();
+reset();
 loop();
 </script>
 
